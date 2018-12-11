@@ -22,6 +22,7 @@ public class TetrisController extends JPanel {
 	public static int howMany;
 	public static int difficulty;
 	public static int quit;
+	public static int clearCounter = 0;
 //points for the four pices that make up a single teris piece.
 	public final Point[][][] pieces = { 
 
@@ -321,7 +322,23 @@ public class TetrisController extends JPanel {
 //this is how the game decides which piece comes next out of the 35 pieces.
 	public void newPiece() 
 	{
-		pieceOrigin = new Point(4, 3);
+		pieceOrigin = new Point(5, 2);
+		for(int column = 1; column < 11; column++)
+		{
+			if(well[column][3] != Color.LIGHT_GRAY)
+			{
+				JOptionPane.showMessageDialog(null, "Your final score was: " + score + ".");
+				try {
+					Thread.sleep(1500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.exit(0);
+
+			} 
+		}
+			
 		rotation = 0;
 		if (nextPieces.isEmpty()) 
 		{
@@ -435,6 +452,11 @@ public class TetrisController extends JPanel {
 					deleteRow(row);
 					row = row + 1;
 					score = score + 1000;
+					clearCounter++;
+					if(clearCounter % 5 == 0)
+					{
+						difficulty = difficulty + 1;
+					}
 				}
 			}
 		} //end clearRows
@@ -477,15 +499,14 @@ public class TetrisController extends JPanel {
 			}
 		}
 		drawPiece(g);
-//This code was pulled from the StackOverFlow website.
+//This code was pulled from the StackOverFlow website, then edited to fit our project.
 	}
-
-//Run the main which makes the JFrame, adds the game and lets you play!
-	public static void main(String[] args) 
+	
+	public static void play()
 	{
 		String[] Play = { "Play Tetris", "Exit Game"};
 		String[] selectDifficulty = { "Beginner", "Intermediate", "Hard", "Insane"};
-		String[] playerCount = { "1", "2"};
+		String[] playerCount = { "1", "2", "4"};
 
 		
 		play = 1;
@@ -506,6 +527,7 @@ public class TetrisController extends JPanel {
 			}
 		}
 		
+		
 		JFrame TetrisGame = new JFrame("Tetris");
 		TetrisGame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		TetrisGame.setSize(12*40+50, 23*40+50);
@@ -513,7 +535,8 @@ public class TetrisController extends JPanel {
 		final TetrisController Tetris = new TetrisController();
 		Tetris.well();
 		TetrisGame.add(Tetris);
-//Ideas for the main method above this line come from StackOverFlow also
+		
+//Ideas for the main method above this line come from StackOverFlow also then edited to fit our project specifically.
 		
 		if (howMany==0)
 		{
@@ -558,7 +581,7 @@ public class TetrisController extends JPanel {
 		});
 		}
 		
-		else
+		else if (howMany == 1)
 		{
 			TetrisGame.addKeyListener(new KeyListener() 
 			{
@@ -572,17 +595,17 @@ public class TetrisController extends JPanel {
 					switch (e.getKeyCode()) 
 					{
 					
-					case KeyEvent.VK_UP:
-						Tetris.rotate(-1);
-						break;
+//					case KeyEvent.VK_UP:
+//						Tetris.rotate(-1);
+//						break;
 						
 					case KeyEvent.VK_W:
 						Tetris.rotate(-1);
 						break; 
 
-					case KeyEvent.VK_DOWN:
-						Tetris.rotate(+1);
-						break;
+//					case KeyEvent.VK_DOWN:
+//						Tetris.rotate(+1);
+//						break;
 						
 					case KeyEvent.VK_S:
 						Tetris.rotate(+1);
@@ -592,24 +615,67 @@ public class TetrisController extends JPanel {
 						Tetris.move(-1);
 						break;
 						
-					case KeyEvent.VK_A:
-						Tetris.move(-1);
-						break;
+//					case KeyEvent.VK_A:
+//						Tetris.move(-1);
+//						break;
 
 					case KeyEvent.VK_RIGHT:
 						Tetris.move(+1);
 						break;
 						
-					case KeyEvent.VK_D:
-						Tetris.move(+1);
-						break;
+//					case KeyEvent.VK_D:
+//						Tetris.move(+1);
+//						break;
 
 					case KeyEvent.VK_SPACE:
 						Tetris.dropPiece();
 						Tetris.score = Tetris.score + 10;
 						break;
 						
+//					case KeyEvent.VK_Z:
+//						Tetris.dropPiece();
+//						Tetris.score = Tetris.score + 10;
+//						break;
+					} 
+				}
+				public void keyReleased(KeyEvent e) 
+				{
+
+				}
+			});
+		}
+		
+		else //four player: one has Q for rotate counter clockwise, one has Z for rotate clockwise, one has P for move left, one has M for move right, and then spacebar still calls drop to speed up the game.
+		{
+			TetrisGame.addKeyListener(new KeyListener() 
+			{
+					
+				public void keyTyped(KeyEvent e) 
+				{
+					
+				}
+				public void keyPressed(KeyEvent e) 
+				{
+					switch (e.getKeyCode()) 
+					{
+					
+					case KeyEvent.VK_Q:
+						Tetris.rotate(-1);
+						break;
+
 					case KeyEvent.VK_Z:
+						Tetris.rotate(+1);
+						break;
+
+					case KeyEvent.VK_P:
+						Tetris.move(-1);
+						break;
+
+					case KeyEvent.VK_M:
+						Tetris.move(+1);
+						break;
+
+					case KeyEvent.VK_SPACE:
 						Tetris.dropPiece();
 						Tetris.score = Tetris.score + 10;
 						break;
@@ -620,7 +686,7 @@ public class TetrisController extends JPanel {
 
 				}
 			});
-		}
+			}
 //this is what allows the piece to drop after a set period of time.
 		new Thread() {
 
@@ -661,5 +727,12 @@ public class TetrisController extends JPanel {
 				}
 			}
 		}.start();
+	}
+
+//Run the main which makes the JFrame, adds the game and lets you play!
+	public static void main(String[] args) 
+	{
+		play();
+		
 	}//end main
 }//end class
